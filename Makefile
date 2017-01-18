@@ -3,7 +3,7 @@ DESTDIR ?=
 GIT_VERSION := $(shell git describe --dirty --always --tags)
 
 .PHONY: all
-all: fbfill
+all: version fbfill
 
 fbfill: fbfill.c
 	$(CC) -o $@ $<
@@ -12,12 +12,14 @@ fbfill: fbfill.c
 .PHONY: clean
 distclean clean:
 	$(RM) fbfill
+	$(RM) version
 	$(RM) *.o
 
 .PHONY: install
 install:
 	install -d $(DESTDIR)/opt/tools
 	install -m 755 fbfill $(DESTDIR)/opt/tools
+	install -m 644 version $(DESTDIR)/opt/tools
 	install -m 755 test_all.sh $(DESTDIR)/opt/tools
 	install -m 755 test_usb1.sh $(DESTDIR)/opt/tools
 	install -m 755 test_usb2.sh $(DESTDIR)/opt/tools
