@@ -46,6 +46,7 @@ TEST_WIFI=0
 TEST_CAN=0
 TEST_ETHERNET=0
 TEST_I2C=0
+TEST_VIDEO=0
 
 if [ $# -eq 0 ]
 then
@@ -57,6 +58,7 @@ then
 	TEST_CAN=1
 	TEST_ETHERNET=1
 	TEST_I2C=1
+	TEST_VIDEO=1
 else
 	for var in "$@"
 	do
@@ -84,6 +86,9 @@ else
 				;;
 			i2c)
 				TEST_I2C=1
+				;;
+			video)
+				TEST_VIDEO=1
 				;;
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
@@ -166,7 +171,7 @@ fi
 
 if [ $TEST_ETHERNET -ne 0 ]
 then
-	test_title "ethernet"
+	test_title "ethernet eth0"
 	# run test_ethernet eth0
 	if ${BINDIR}/test_ethernet.sh -i eth0
 	then
@@ -174,6 +179,7 @@ then
 	else
 		error
 	fi
+	test_title "ethernet eth1"
 	# run test_ethernet eth1
 	if ${BINDIR}/test_ethernet.sh -i eth1
 	then
@@ -195,4 +201,23 @@ then
 	fi
 fi
 
+if [ $TEST_VIDEO -ne 0 ]
+then
+	test_title "video lvds"
+	# run test_video display lvds 800x600
+	if ${BINDIR}/test_video.sh -w 800 -h 600 -d 32 -f /dev/fb0
+	then
+		success
+	else
+		error
+	fi
+	test_title "video hdmi"
+	echo 0 > /sys/class/graphics/fb2/blank 2>/dev/null
+	if ${BINDIR}/test_video.sh -w 1920 -h 1080 -d 32 -f /dev/fb2
+	then
+		success
+	else
+		error
+	fi
+fi
 # add other tests...

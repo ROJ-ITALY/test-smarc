@@ -9,18 +9,19 @@ function error
 	local msg
 
 	case $1 in
-		$ERROR_I2C0_NOTFOUND)
-			msg="Bus i2c 0 not found"
+		$ERROR_INVALIDARGS)
+			msg="Invalid arguments"
 			;;
-		$ERROR_I2C1_NOTFOUND)
-			msg="Bus i2c 1 not found"
+		$ERROR_FBFILL)
+			msg="Error to draw color bars"
 			;;
-		$ERROR_I2C2_NOTFOUND)
-			msg="Bus i2c 2 not found"
+		$ERROR_READTIMEOUT)
+			msg="Unexpected response"
+			dd if=/dev/zero of=$FB 2>/dev/null
 			;;
 		$ERROR_TEST_FAIL)
-			rm /tmp/i2c.out
-			msg="Unexpected scan response"
+			msg="Comparison failed"
+			dd if=/dev/zero of=$FB 2>/dev/null
 			;;
 		*)
 			msg="Unknown error"
@@ -39,8 +40,9 @@ function error
 function success
 {
 	echo "$TEST - OK"
+
+	dd if=/dev/zero of=$FB 2>/dev/null
 	
-	rm /tmp/i2c.out
 	# exit from the script
 	exit 0
 }
@@ -48,38 +50,58 @@ function success
 #------------------------------------------------------------------------------
 #	main script
 #------------------------------------------------------------------------------
-TEST=test_i2c
+TEST=test_video
 
 # list errors
-ERROR_I2C0_NOTFOUND=1
-ERROR_I2C1_NOTFOUND=2
-ERROR_I2C2_NOTFOUND=3
+ERROR_INVALIDARGS=1
+ERROR_FBFILL=2
+ERROR_READTIMEOUT=3
 ERROR_TEST_FAIL=4
 
+READ_TIMEOUT=10
 BINDIR=$(dirname $0)
 
-if [ ! -e /sys/class/i2c-dev/i2c-0 ]
+# default args
+WIDTH=""
+HEIGHT=""
+BPP=""
+FB=""
+
+while getopts "w:h:d:f:" o
+do
+	case "$o"
+	in
+		w)	WIDTH=$OPTARG
+			;;
+		h) 	HEIGHT=$OPTARG
+			;;
+		d)	BPP=$OPTARG
+			;;
+		f)	FB=$OPTARG
+			;;
+		\?)
+			error $ERROR_INVALIDARGS
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+
+if ! ${BINDIR}/fbfill $WIDTH $HEIGHT $BPP $FB
 then
-	error $ERROR_I2C0_NOTFOUND""
+	error $ERROR_FBFILL
 fi
 
-if [ ! -e /sys/class/i2c-dev/i2c-1 ]
+if ! read -t $READ_TIMEOUT ACK
 then
-	error $ERROR_I2C1_NOTFOUND
+	error $ERROR_READTIMEOUT
 fi
 
-if [ ! -e /sys/class/i2c-dev/i2c-2 ]
-then
-	error $ERROR_I2C2_NOTFOUND
-fi
+# ACK=0 --> test ok
+# ACK=1 --> test fail
 
-i2cdetect -y 0 > /tmp/i2c.out
-i2cdetect -y 1 >> /tmp/i2c.out
-i2cdetect -y 2 >> /tmp/i2c.out
-
-if diff -q ${BINDIR}/i2c.out /tmp/i2c.out
+if [ $ACK -ne 0 ]
 then
-	success
-else
 	error $ERROR_TEST_FAIL
 fi
+
+success
