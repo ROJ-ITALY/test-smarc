@@ -61,7 +61,9 @@ candump can0 > /tmp/cantest.txt &
 cansend can1 -i 0x5a1 0x0a 0x0b 0x0c
 
 RESULT=$(cat /tmp/cantest.txt | tail -n 1)
-	
+
+sleep 1
+
 if [ "$RESULT" == "<0x5a1> [3] 0a 0b 0c " ]
 then
 	candump can1 > /tmp/cantest.txt &
