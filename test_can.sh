@@ -60,6 +60,7 @@ ip link set can1 up type can bitrate 125000 2> /dev/null
 sleep 1
 
 candump can0 > /tmp/cantest.txt &
+# add sleep to avoid timing problems seen during the tests
 sleep 1
 cansend can1 -i 0x5a1 0x0a 0x0b 0x0c
 
@@ -68,6 +69,7 @@ RESULT=$(cat /tmp/cantest.txt | tail -n 1)
 if [ "$RESULT" == "<0x5a1> [3] 0a 0b 0c " ]
 then
 	candump can1 > /tmp/cantest.txt &
+	# add sleep to avoid timing problems seen during the tests
 	sleep 1
 	cansend can0 -i 0x5a1 0x0a 0x0b 0x0c
 		
