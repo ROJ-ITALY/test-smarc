@@ -31,6 +31,8 @@ install:
 	install -m 755 test_i2c.sh $(DESTDIR)/opt/tools
 	install -m 755 i2c.out $(DESTDIR)/opt/tools
 	install -m 755 test_video.sh $(DESTDIR)/opt/tools
+	install -m 755 test_serial1.sh $(DESTDIR)/opt/tools
+	install -m 755 test_serial2.sh $(DESTDIR)/opt/tools
 
 .PHONY: force
 version: force

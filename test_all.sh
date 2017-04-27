@@ -47,6 +47,8 @@ TEST_CAN=0
 TEST_ETHERNET=0
 TEST_I2C=0
 TEST_VIDEO=0
+TEST_SERIAL1=0
+TEST_SERIAL2=0
 
 if [ $# -eq 0 ]
 then
@@ -59,6 +61,8 @@ then
 	TEST_ETHERNET=1
 	TEST_I2C=1
 	TEST_VIDEO=1
+	TEST_SERIAL1=1
+	TEST_SERIAL2=1
 else
 	for var in "$@"
 	do
@@ -89,6 +93,12 @@ else
 				;;
 			video)
 				TEST_VIDEO=1
+				;;
+			serial1)
+				TEST_SERIAL1=1
+				;;
+			serial2)
+				TEST_SERIAL2=1
 				;;
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
@@ -214,6 +224,38 @@ then
 	test_title "video hdmi"
 	echo 0 > /sys/class/graphics/fb2/blank 2>/dev/null
 	if ${BINDIR}/test_video.sh -w 1920 -h 1080 -d 32 -f /dev/fb2
+	then
+		success
+	else
+		error
+	fi
+fi
+
+if [ $TEST_SERIAL1 -ne 0 ]
+then
+	test_title "ser0 - ser2"
+	# run test_serial1 ser0 - ser2
+	if ${BINDIR}/test_serial1.sh -t /dev/ttymxc0 -r /dev/ttymxc2
+	then
+		success
+	else
+		error
+	fi
+	#test_title "ser2 - ser0"
+	# run test_serial1 ser2 - ser0
+	#if ${BINDIR}/test_serial1.sh -t /dev/ttymxc2 -r /dev/ttymxc0
+	#then
+	#	success
+	#else
+	#	error
+	#fi
+fi
+
+if [ $TEST_SERIAL2 -ne 0 ]
+then
+	test_title "ser3"
+	# run test_serial2 ser3
+	if ${BINDIR}/test_serial2.sh -p /dev/ttymxc3
 	then
 		success
 	else
