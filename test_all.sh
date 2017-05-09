@@ -49,6 +49,7 @@ TEST_I2C=0
 TEST_VIDEO=0
 TEST_SERIAL1=0
 TEST_SERIAL2=0
+TEST_GPIO=0
 
 if [ $# -eq 0 ]
 then
@@ -63,6 +64,7 @@ then
 	TEST_VIDEO=1
 	TEST_SERIAL1=1
 	TEST_SERIAL2=1
+	TEST_GPIO=1
 else
 	for var in "$@"
 	do
@@ -99,6 +101,9 @@ else
 				;;
 			serial2)
 				TEST_SERIAL2=1
+				;;
+			gpio)
+				TEST_GPIO=1
 				;;
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
@@ -262,4 +267,17 @@ then
 		error
 	fi
 fi
+
+if [ $TEST_GPIO -ne 0 ]
+then
+	test_title "gpio"
+	# run test_gpio
+	if ${BINDIR}/test_gpio.sh
+	then
+		success
+	else
+		error
+	fi
+fi
+
 # add other tests...
