@@ -34,6 +34,7 @@ install:
 	install -m 755 test_serial1.sh $(DESTDIR)/opt/tools
 	install -m 755 test_serial2.sh $(DESTDIR)/opt/tools
 	install -m 755 test_gpio.sh $(DESTDIR)/opt/tools
+	install -m 755 test_eeprom.sh $(DESTDIR)/opt/tools
 
 .PHONY: force
 version: force
