@@ -51,6 +51,7 @@ TEST_SERIAL1=0
 TEST_SERIAL2=0
 TEST_GPIO=0
 TEST_EEPROM=0
+TEST_SPARE_PIN=0
 
 if [ $# -eq 0 ]
 then
@@ -67,6 +68,7 @@ then
 	TEST_SERIAL2=1
 	TEST_GPIO=1
 	TEST_EEPROM=1
+	TEST_SPARE_PIN=1
 else
 	for var in "$@"
 	do
@@ -109,6 +111,9 @@ else
 				;;
 			eeprom)
 				TEST_EEPROM=1
+				;;
+			spare_pin)
+				TEST_SPARE_PIN=1
 				;;
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
@@ -290,6 +295,18 @@ then
 	test_title "eeprom"
 	# run test_eeprom
 	if ${BINDIR}/test_eeprom.sh
+	then
+		success
+	else
+		error
+	fi
+fi
+
+if [ $TEST_SPARE_PIN -ne 0 ]
+then
+	test_title "spare_pin"
+	# run test_spare_pin
+	if ${BINDIR}/test_spare_pin.sh
 	then
 		success
 	else
