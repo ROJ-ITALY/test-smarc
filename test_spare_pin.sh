@@ -21,6 +21,12 @@ function error
 		$ERROR_SER0_CTS)
 			msg="EIM_WAIT - SER0_CTS"
 			;;
+		$ERROR_EIM_AD02)
+			msg="EIM_AD06 - EIM_AD02"
+			;;
+		$ERROR_EIM_AD00)
+			msg="EIM_AD09 - EIM_AD00"
+			;;
 		*)
 			msg="Unknown error"
 			;;
@@ -60,6 +66,10 @@ echo 79 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio79/direction
 echo 128 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio128/direction
+echo 70 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio70/direction
+echo 73 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio73/direction
 
 }
 
@@ -72,6 +82,8 @@ echo 38 > /sys/class/gpio/unexport
 echo 35 > /sys/class/gpio/unexport
 echo 79 > /sys/class/gpio/unexport
 echo 128 > /sys/class/gpio/unexport
+echo 70 > /sys/class/gpio/unexport
+echo 73 > /sys/class/gpio/unexport
 
 }
 
@@ -85,6 +97,8 @@ ERROR_LCD_DUAL_PCK=1
 ERROR_USB1_EN_OC=2
 ERROR_SER2_CTS=3
 ERROR_SER0_CTS=4
+ERROR_EIM_AD02=5
+ERROR_EIM_AD00=6
 
 gpio_init
 
@@ -114,6 +128,20 @@ value=$(cat /sys/class/gpio/gpio128/value)
 if [ "$value" != "0" ]
 then
 	error $ERROR_SER0_CTS
+fi
+
+# test short between EIM_AD06 (GPIO3_IO06) - EIM_AD02
+value=$(cat /sys/class/gpio/gpio70/value)
+if [ "$value" != "1" ]
+then
+	error $ERROR_EIM_AD02
+fi
+
+# test short between EIM_AD09 (GPIO3_IO06) - EIM_AD00
+value=$(cat /sys/class/gpio/gpio73/value)
+if [ "$value" != "1" ]
+then
+	error $ERROR_EIM_AD00
 fi
 
 success
