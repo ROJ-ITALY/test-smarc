@@ -8,32 +8,12 @@ function error
 
 	local msg
 
-	case $1 in
-		$ERROR_PATTERN_0000)
-			msg="Pattern 0000 check failed"
-			;;
-		$ERROR_PATTERN_1000)
-			msg="Pattern 1000 check failed"
-			;;
-		$ERROR_PATTERN_0100)
-			msg="Pattern 0100 check failed"
-			;;
-		$ERROR_PATTERN_0010)
-			msg="Pattern 0010 check failed"
-			;;
-		$ERROR_PATTERN_0001)
-			msg="Pattern 0001 check failed"
-			;;
-		*)
-			msg="Unknown error"
-			;;
-	esac
-
-	echo "$TEST - ERROR $1 ($msg)"
+	msg="Pattern $1 check failed"
+	echo "$TEST - ERROR 1 ($msg)"
 
 	gpio_deinit
 	# exit from the script
-	exit $1
+	exit 1
 }
 
 #------------------------------------------------------------------------------
@@ -51,7 +31,7 @@ function success
 #------------------------------------------------------------------------------
 #	function gpio_init
 #------------------------------------------------------------------------------
-gpio_init() {
+gpio_init () {
 
 #gpio out
 echo 78 > /sys/class/gpio/export
@@ -62,6 +42,10 @@ echo 39 > /sys/class/gpio/export
 echo "out" > /sys/class/gpio/gpio39/direction
 echo 170 > /sys/class/gpio/export
 echo "out" > /sys/class/gpio/gpio170/direction
+echo 149 > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio149/direction
+echo 148 > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio148/direction
 
 #gpio in
 echo 77 > /sys/class/gpio/export
@@ -72,13 +56,21 @@ echo 167 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio167/direction
 echo 171 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio171/direction
+echo 94 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio94/direction
+echo 95 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio94/direction
+echo 106 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio106/direction
+echo 169 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio169/direction
 
 }
 
 #------------------------------------------------------------------------------
 #	function gpio_deinit
 #------------------------------------------------------------------------------
-gpio_deinit() {
+gpio_deinit () {
 
 echo 78 > /sys/class/gpio/unexport
 echo 72 > /sys/class/gpio/unexport
@@ -88,6 +80,12 @@ echo 77 > /sys/class/gpio/unexport
 echo 71 > /sys/class/gpio/unexport
 echo 167 > /sys/class/gpio/unexport
 echo 171 > /sys/class/gpio/unexport
+echo 94 > /sys/class/gpio/unexport
+echo 95 > /sys/class/gpio/unexport
+echo 149 > /sys/class/gpio/unexport
+echo 106 > /sys/class/gpio/unexport
+echo 148 > /sys/class/gpio/unexport
+echo 169 > /sys/class/gpio/unexport
 
 }
 
@@ -101,6 +99,26 @@ gpio_write () {
 	echo ${STR:1:1} > /sys/class/gpio/gpio72/value
 	echo ${STR:2:1} > /sys/class/gpio/gpio39/value
 	echo ${STR:3:1} > /sys/class/gpio/gpio170/value
+	PCAM_ON_CSI1=$(echo ${STR:4:1})
+	if [ $PCAM_ON_CSI1 -eq 1 ]
+	then	
+		i2cset -f -y 2 0x04 0x00 0x08
+	fi
+	PCAM_ON_CSI0=$(echo ${STR:5:1})
+	if [ $PCAM_ON_CSI0 -eq 1 ]
+	then
+		i2cset -f -y 2 0x04 0x00 0x04
+	fi
+	CHARGING=$(echo ${STR:6:1})
+	if [ $CHARGING -eq 1 ]
+	then
+		i2cset -f -y 2 0x04 0x00 0x00
+		echo ${STR:6:1} > /sys/class/gpio/gpio149/value
+	else
+		echo ${STR:6:1} > /sys/class/gpio/gpio149/value
+	fi
+	echo ${STR:7:1} > /sys/class/gpio/gpio148/value
+
 }
 
 #------------------------------------------------------------------------------
@@ -113,7 +131,11 @@ gpio_read () {
 	STR=${STR}$(cat /sys/class/gpio/gpio71/value)
 	STR=${STR}$(cat /sys/class/gpio/gpio167/value)
 	STR=${STR}$(cat /sys/class/gpio/gpio171/value)
-		
+	STR=${STR}$(cat /sys/class/gpio/gpio94/value)		
+	STR=${STR}$(cat /sys/class/gpio/gpio95/value)
+	STR=${STR}$(cat /sys/class/gpio/gpio106/value)
+	STR=${STR}$(cat /sys/class/gpio/gpio169/value)
+	
 	echo $STR
 }
 
@@ -137,39 +159,41 @@ gpio_check () {
 #------------------------------------------------------------------------------
 TEST=test_gpio
 
-# list errors
-ERROR_PATTERN_0000=1
-ERROR_PATTERN_1000=2
-ERROR_PATTERN_0100=3
-ERROR_PATTERN_0010=4
-ERROR_PATTERN_0001=5
+NUM_SHORT=8
+COUNTER=0
 
+while [ $COUNTER -lt $NUM_SHORT ]; do
+	PATTERN_ARRAY[$COUNTER]="0"
+	let COUNTER=COUNTER+1
+done
+PATTERN=$(echo "${PATTERN_ARRAY[*]}" | tr -d '[:space:]')
 
 gpio_init
 
-if ! gpio_check "0000"
+if ! gpio_check $PATTERN
 then
-	error $ERROR_PATTERN_0000
+	error $PATTERN
 fi
 
-if ! gpio_check "1000"
-then
-	error $ERROR_PATTERN_1000
-fi
-
-if ! gpio_check "0100"
-then
-	error $ERROR_PATTERN_0100
-fi
-
-if ! gpio_check "0010"
-then
-	error $ERROR_PATTERN_0010
-fi
-
-if ! gpio_check "0001"
-then
-	error $ERROR_PATTERN_0001
-fi
+for i in `seq 0 $(($NUM_SHORT-1))`;
+do
+	if [ $i -eq 0 ]
+	then
+		PATTERN_ARRAY[$i]="1"
+		PATTERN=$(echo "${PATTERN_ARRAY[*]}" | tr -d '[:space:]')
+		if ! gpio_check $PATTERN
+		then
+			error $PATTERN
+		fi
+	else
+		PATTERN_ARRAY[$(($i-1))]="0"
+		PATTERN_ARRAY[$i]="1"
+		PATTERN=$(echo "${PATTERN_ARRAY[*]}" | tr -d '[:space:]')
+		if ! gpio_check $PATTERN
+		then
+			error $PATTERN
+		fi
+	fi
+done
 
 success
