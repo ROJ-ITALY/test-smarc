@@ -36,6 +36,7 @@ install:
 	install -m 755 test_gpio.sh $(DESTDIR)/opt/tools
 	install -m 755 test_eeprom.sh $(DESTDIR)/opt/tools
 	install -m 755 test_spare_pin.sh $(DESTDIR)/opt/tools
+	install -m 755 test_spi.sh $(DESTDIR)/opt/tools
 
 .PHONY: force
 version: force

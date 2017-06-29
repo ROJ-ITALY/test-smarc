@@ -52,6 +52,7 @@ TEST_SERIAL2=0
 TEST_GPIO=0
 TEST_EEPROM=0
 TEST_SPARE_PIN=0
+TEST_SPI=0
 
 if [ $# -eq 0 ]
 then
@@ -69,6 +70,7 @@ then
 	TEST_GPIO=1
 	TEST_EEPROM=1
 	TEST_SPARE_PIN=1
+	TEST_SPI=1
 else
 	for var in "$@"
 	do
@@ -115,6 +117,9 @@ else
 			spare_pin)
 				TEST_SPARE_PIN=1
 				;;
+			spi)
+				TEST_SPI=1
+				;;
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
 				;;
@@ -146,15 +151,19 @@ then
 	fi
 fi
 
-if [ $TEST_SATA -ne 0 ]
+MACHINE=$(cat /etc/hostname)
+if [ "$MACHINE" == "mx6qroj" ]
 then
-	test_title "sata"
-	# run test_sata
-	if ${BINDIR}/test_sata.sh
+	if [ $TEST_SATA -ne 0 ]
 	then
-		success
-	else
-		error
+		test_title "sata"
+		# run test_sata
+		if ${BINDIR}/test_sata.sh
+		then
+			success
+		else
+			error
+		fi
 	fi
 fi
 
@@ -256,14 +265,14 @@ then
 	else
 		error
 	fi
-	#test_title "ser2 - ser0"
+	test_title "ser2 - ser0"
 	# run test_serial1 ser2 - ser0
-	#if ${BINDIR}/test_serial1.sh -t /dev/ttymxc2 -r /dev/ttymxc0
-	#then
-	#	success
-	#else
-	#	error
-	#fi
+	if ${BINDIR}/test_serial1.sh -t /dev/ttymxc2 -r /dev/ttymxc0
+	then
+		success
+	else
+		error
+	fi
 fi
 
 if [ $TEST_SERIAL2 -ne 0 ]
@@ -307,6 +316,18 @@ then
 	test_title "spare_pin"
 	# run test_spare_pin
 	if ${BINDIR}/test_spare_pin.sh
+	then
+		success
+	else
+		error
+	fi
+fi
+
+if [ $TEST_SPI -ne 0 ]
+then
+	test_title "spi"
+	# run test_spi
+	if ${BINDIR}/test_spi.sh
 	then
 		success
 	else

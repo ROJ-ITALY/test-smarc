@@ -54,6 +54,27 @@ send_and_check() {
 
 	if [ -e $TX ] && [ -e $RX ]
 	then
+		if [ "$TX" == "/dev/ttymxc0" ]
+		then
+			echo 128 > /sys/class/gpio/export
+			echo "out" > /sys/class/gpio/gpio128/direction
+			echo "1" > /sys/class/gpio/gpio128/value
+			echo 128 > /sys/class/gpio/unexport
+			echo 79 > /sys/class/gpio/export
+			echo "out" > /sys/class/gpio/gpio79/direction
+			echo "0" > /sys/class/gpio/gpio79/value
+			echo 79 > /sys/class/gpio/unexport
+		else
+			echo 128 > /sys/class/gpio/export
+			echo "out" > /sys/class/gpio/gpio128/direction
+			echo "0" > /sys/class/gpio/gpio128/value
+			echo 128 > /sys/class/gpio/unexport
+			echo 79 > /sys/class/gpio/export
+			echo "out" > /sys/class/gpio/gpio79/direction
+			echo "1" > /sys/class/gpio/gpio79/value
+			echo 79 > /sys/class/gpio/unexport
+		fi
+
 		stty -F $TX 115200 sane -echo
 		stty -F $RX 115200 sane -echo
 		
