@@ -247,7 +247,8 @@ then
 	fi
 	test_title "video hdmi"
 	echo 0 > /sys/class/graphics/fb2/blank 2>/dev/null
-	if ${BINDIR}/test_video.sh -w 1920 -h 1080 -d 32 -f /dev/fb2
+	fbset -fb /dev/fb2 -g 800 480 800 480 32
+	if ${BINDIR}/test_video.sh -w 800 -h 480 -d 32 -f /dev/fb2
 	then
 		success
 	else

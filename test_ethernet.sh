@@ -67,7 +67,7 @@ ERROR_PINGFAILED=5
 
 # default args
 IF=eth0
-DEST=8.8.8.8
+DEST=192.168.241.1
 while getopts "i:d:" o
 do
 	case "$o"
