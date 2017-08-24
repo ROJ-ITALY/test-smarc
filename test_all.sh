@@ -207,7 +207,7 @@ if [ $TEST_ETHERNET -ne 0 ]
 then
 	test_title "ethernet eth0"
 	# run test_ethernet eth0
-	if ${BINDIR}/test_ethernet.sh -i eth0
+	if ${BINDIR}/test_ethernet.sh -i eth0 -d 8.8.8.8
 	then
 		success
 	else
@@ -215,7 +215,7 @@ then
 	fi
 	test_title "ethernet eth1"
 	# run test_ethernet eth1
-	if ${BINDIR}/test_ethernet.sh -i eth1
+	if ${BINDIR}/test_ethernet.sh -i eth1 -d 8.8.8.8
 	then
 		success
 	else
