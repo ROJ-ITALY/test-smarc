@@ -47,7 +47,7 @@ function success
 #------------------------------------------------------------------------------
 function disk_check
 {
-	if [ -e /dev/sda ]
+	if [ -d /sys/devices/soc0/soc/2200000.sata/ata1/host0/target0:0:0 ]
 	then
 		echo "- Sata device plugged."
 		dev="/dev/sda"

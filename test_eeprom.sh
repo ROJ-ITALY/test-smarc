@@ -46,14 +46,17 @@ value="0x0a"
 #i2cset -f -y i2cbus chip-address data-address[16bit] value
 #write the value 0x0a at the data-address 0x0000
 i2cset -f -y 2 0x50 0x00 0x00 $value i
+sleep 1
 i2cset -f -y 2 0x50 0x00 0x00
 
 #i2cget -f -y i2cbus chip-address data-address
 #read the value at the data-address 0x0000
 if [ "$(i2cget -f -y 2 0x50)" == "$value" ]
 	then
+		i2cset -f -y 2 0x50 0x00 0x00 0xff i
 		return 0
 	else
+		i2cset -f -y 2 0x50 0x00 0x00 0xff i
 		return 1
 	fi
 }
