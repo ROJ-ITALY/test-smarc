@@ -152,7 +152,7 @@ then
 fi
 
 MACHINE=$(cat /etc/hostname)
-if [ "$MACHINE" == "mx6qroj" ]
+if [ "$MACHINE" == "imx6qenuc" ]
 then
 	if [ $TEST_SATA -ne 0 ]
 	then
@@ -213,9 +213,9 @@ then
 	else
 		error
 	fi
-	test_title "ethernet eth1"
-	# run test_ethernet eth1
-	if ${BINDIR}/test_ethernet.sh -i eth1 -d 8.8.8.8
+	test_title "ethernet enp1s0"
+	# run test_ethernet enp1s0
+	if ${BINDIR}/test_ethernet.sh -i enp1s0 -d 8.8.8.8
 	then
 		success
 	else
