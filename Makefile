@@ -6,7 +6,7 @@ GIT_VERSION := $(shell git describe --dirty --always --tags)
 all: version fbfill
 
 fbfill: fbfill.c
-	$(CC) -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $<
 
 .PHONY: distclean
 .PHONY: clean
