@@ -53,6 +53,7 @@ TEST_GPIO=0
 TEST_EEPROM=0
 TEST_SPARE_PIN=0
 TEST_SPI=0
+TEST_SHA204=0
 
 if [ $# -eq 0 ]
 then
@@ -71,6 +72,7 @@ then
 	TEST_EEPROM=1
 	TEST_SPARE_PIN=1
 	TEST_SPI=1
+	TEST_SHA204=1
 else
 	for var in "$@"
 	do
@@ -120,6 +122,8 @@ else
 			spi)
 				TEST_SPI=1
 				;;
+			sha204)
+				TEST_SHA204=1
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
 				;;
@@ -336,4 +340,15 @@ then
 	fi
 fi
 
+if [ $TEST_SHA204 -ne 0 ]
+then
+	test_title "sha204"
+	# run test_sha204
+	if ${BINDIR}/test_sha204.sh
+	then
+		success
+	else
+		error
+	fi
+fi
 # add other tests...
