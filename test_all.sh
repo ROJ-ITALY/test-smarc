@@ -124,6 +124,7 @@ else
 				;;
 			sha204)
 				TEST_SHA204=1
+				;;
 			*)
 				echo -e "\e[91mtest_all: Invalid command line argument.\e[39m"
 				;;
