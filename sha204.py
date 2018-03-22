@@ -35,10 +35,8 @@ def open():
 	fr = io.open('/dev/i2c-2', 'rb', buffering=0)
 	fw = io.open('/dev/i2c-2', 'wb', buffering=0)
 	if ( fcntl.ioctl(fr, I2C_SLAVE, I2C_ADDR) < 0 ):
-		print('ERR: Open device I2C SHA204 failed (read channel)')
 		sys.exit(err_dict['ERR_OPEN'])
 	if ( fcntl.ioctl(fw, I2C_SLAVE, I2C_ADDR) < 0 ):
-		print('ERR: Open device I2C SHA204 failed (write channel)')
 		sys.exit(err_dict['ERR_OPEN'])
 	return fr, fw
 
@@ -61,7 +59,6 @@ def write(fd, wordAddr, ba=None):
 		lenght = 1
 		frame = wordAddr	
 	if ( fw.write(frame) != len(frame) ):
-		print('ERR: Error byte written')
 		close(fd)
 		sys.exit(err_dict['ERR_WRITE'])
 
@@ -99,7 +96,6 @@ def wakeup(fd):
 		write(fd, b'\x00')
 		ba = read(fr)
 		if( ba[0] != 0x11 ):
-			print('ERR: Wake up error')
 			close(fd)
 			sys.exit(err_dict['ERR_WAKEUP'])
 	except OSError:
@@ -115,11 +111,9 @@ def config():
 	index = 0x00
 	ba = readConfig(fd, index)
 	if ( ba[0] == 0x01 and ba[1] == 0x23 ):
-		print('OK')
 		close(fd)
 		sys.exit(0)
 	else:
-		print('ERR: Test ConfigZone failed')
 		close(fd)
 		sys.exit(err_dict['ERR_TEST'])
 	
