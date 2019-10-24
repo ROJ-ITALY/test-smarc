@@ -94,7 +94,7 @@ then
 	fi
 
 	echo "- Ip address request"
-	if ! udhcpc -n -q -i $IF > /dev/null
+	if ! udhcpc -q -i $IF > /dev/null
 	then
 		error $ERROR_DHCP
 	fi
