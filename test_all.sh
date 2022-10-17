@@ -242,14 +242,6 @@ fi
 
 if [ $TEST_VIDEO -ne 0 ]
 then
-	test_title "video lvds"
-	# run test_video display lvds 800x600
-	if ${BINDIR}/test_video.sh -w 800 -h 600 -d 32 -f /dev/fb0
-	then
-		success
-	else
-		error
-	fi
 	test_title "video hdmi"
 	echo 0 > /sys/class/graphics/fb2/blank 2>/dev/null
 	fbset -fb /dev/fb2 -g 800 480 800 480 32

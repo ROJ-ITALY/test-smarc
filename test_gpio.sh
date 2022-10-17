@@ -56,10 +56,6 @@ echo 167 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio167/direction
 echo 171 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio171/direction
-echo 94 > /sys/class/gpio/export
-echo "in" > /sys/class/gpio/gpio94/direction
-echo 95 > /sys/class/gpio/export
-echo "in" > /sys/class/gpio/gpio94/direction
 echo 106 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio106/direction
 echo 169 > /sys/class/gpio/export
@@ -80,8 +76,6 @@ echo 77 > /sys/class/gpio/unexport
 echo 71 > /sys/class/gpio/unexport
 echo 167 > /sys/class/gpio/unexport
 echo 171 > /sys/class/gpio/unexport
-echo 94 > /sys/class/gpio/unexport
-echo 95 > /sys/class/gpio/unexport
 echo 149 > /sys/class/gpio/unexport
 echo 106 > /sys/class/gpio/unexport
 echo 148 > /sys/class/gpio/unexport
@@ -99,25 +93,15 @@ gpio_write () {
 	echo ${STR:1:1} > /sys/class/gpio/gpio72/value
 	echo ${STR:2:1} > /sys/class/gpio/gpio39/value
 	echo ${STR:3:1} > /sys/class/gpio/gpio170/value
-	PCAM_ON_CSI1=$(echo ${STR:4:1})
-	if [ $PCAM_ON_CSI1 -eq 1 ]
-	then	
-		i2cset -f -y 2 0x04 0x00 0x08
-	fi
-	PCAM_ON_CSI0=$(echo ${STR:5:1})
-	if [ $PCAM_ON_CSI0 -eq 1 ]
-	then
-		i2cset -f -y 2 0x04 0x00 0x04
-	fi
-	CHARGING=$(echo ${STR:6:1})
+	CHARGING=$(echo ${STR:4:1})
 	if [ $CHARGING -eq 1 ]
 	then
 		i2cset -f -y 2 0x04 0x00 0x00
-		echo ${STR:6:1} > /sys/class/gpio/gpio149/value
+		echo ${STR:4:1} > /sys/class/gpio/gpio149/value
 	else
-		echo ${STR:6:1} > /sys/class/gpio/gpio149/value
+		echo ${STR:4:1} > /sys/class/gpio/gpio149/value
 	fi
-	echo ${STR:7:1} > /sys/class/gpio/gpio148/value
+	echo ${STR:5:1} > /sys/class/gpio/gpio148/value
 
 }
 
@@ -131,8 +115,6 @@ gpio_read () {
 	STR=${STR}$(cat /sys/class/gpio/gpio71/value)
 	STR=${STR}$(cat /sys/class/gpio/gpio167/value)
 	STR=${STR}$(cat /sys/class/gpio/gpio171/value)
-	STR=${STR}$(cat /sys/class/gpio/gpio94/value)		
-	STR=${STR}$(cat /sys/class/gpio/gpio95/value)
 	STR=${STR}$(cat /sys/class/gpio/gpio106/value)
 	STR=${STR}$(cat /sys/class/gpio/gpio169/value)
 	
@@ -159,7 +141,7 @@ gpio_check () {
 #------------------------------------------------------------------------------
 TEST=test_gpio
 
-NUM_SHORT=8
+NUM_SHORT=6
 COUNTER=0
 
 while [ $COUNTER -lt $NUM_SHORT ]; do

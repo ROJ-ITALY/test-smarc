@@ -116,20 +116,6 @@ then
 	error $ERROR_USB1_EN_OC
 fi
 
-# test short between EIM_AD15 (GPIO3_IO15) - SER2_CTS
-value=$(cat /sys/class/gpio/gpio79/value)
-if [ "$value" != "0" ]
-then
-	error $ERROR_SER2_CTS
-fi
-
-# test short between EIM_WAIT (GPIO5_IO00) - SER0_CTS
-value=$(cat /sys/class/gpio/gpio128/value)
-if [ "$value" != "0" ]
-then
-	error $ERROR_SER0_CTS
-fi
-
 # test short between EIM_AD06 (GPIO3_IO06) - EIM_AD02
 value=$(cat /sys/class/gpio/gpio70/value)
 if [ "$value" != "1" ]
